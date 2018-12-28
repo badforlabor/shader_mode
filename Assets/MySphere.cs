@@ -9,6 +9,10 @@ public class MySphere : MonoBehaviour {
     public int Rings = 12;
     public int Sectors = 24;
 
+    // 如果三角面上的法线和三角面顶点的法线是一致的，就能达到了flatshader效果。
+    // 这时候，就需要不共享顶点了。（正常情况下，1个平面=2个三角面=4个顶点。此时，不共享的情况下，1个平面=2个三角面=6个顶点）
+    public bool NoShareVert = false;    
+
 
     private void Awake()
     {
@@ -24,7 +28,7 @@ public class MySphere : MonoBehaviour {
         }
 
         //把mesh赋给MeshFilter
-        mf.mesh = CreateSphere(1, 12, 24);
+        mf.mesh = CreateSphere(1, 12, 24, false);
     }
 
     // Use this for initialization
@@ -38,11 +42,11 @@ public class MySphere : MonoBehaviour {
         if (refresh)
         {
             refresh = false;
-            mf.mesh = CreateSphere(1, Rings, Sectors);
+            mf.mesh = CreateSphere(1, Rings, Sectors, NoShareVert);
         }
     }
 
-    static Mesh CreateSphere(float radius, int rings, int sectors)
+    static Mesh CreateSphere(float radius, int rings, int sectors, bool noShareVert)
     {
         rings = Mathf.Max(2, rings);
         sectors = Mathf.Max(2, sectors);
@@ -92,10 +96,27 @@ public class MySphere : MonoBehaviour {
             }
         }
 
-        mesh.vertices = verts.ToArray();
-        mesh.normals = ns.ToArray();
-        mesh.triangles = trs.ToArray();
-        mesh.uv = uvs.ToArray();
+        if (noShareVert)
+        {
+            var newVerts = new List<Vector3>(trs.Count);
+            for (int i = 0; i < trs.Count; i++)
+            {
+                newVerts.Add(verts[trs[i]]);
+                trs[i] = i;
+            }
+            mesh.vertices = newVerts.ToArray();
+            mesh.triangles = trs.ToArray();
+            mesh.RecalculateBounds();
+            mesh.RecalculateNormals();
+        }
+        else
+        {
+
+            mesh.vertices = verts.ToArray();
+            mesh.triangles = trs.ToArray();
+            mesh.normals = ns.ToArray();
+            mesh.uv = uvs.ToArray();
+        }
 
         return mesh;
     }
