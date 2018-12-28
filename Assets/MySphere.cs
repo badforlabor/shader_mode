@@ -23,44 +23,6 @@ public class MySphere : MonoBehaviour {
             mr = this.gameObject.AddComponent<MeshRenderer>();
         }
 
-        var mesh = new Mesh();
-
-        //8个顶点
-        Vector3[] Vertices = new Vector3[8]
-        {
-            new Vector3(0, 0, 0), new Vector3(5, 0, 0), new Vector3(0, 0, 5), new Vector3(5, 0, 5),
-            new Vector3(0, 5, 0), new Vector3(5, 5, 0), new Vector3(0, 5, 5), new Vector3(5, 5, 5)
-        };
-
-        //每个顶点有自己的法线坐标，并且是相邻三个平面的法线坐标的和。normalize之后向量长度变为1。
-        Vector3[] Normals = new Vector3[8]
-        {
-            new Vector3(-1, -1, -1).normalized, new Vector3(1, -1, -1).normalized, new Vector3(-1, -1, 1).normalized, new Vector3(1, -1, 1).normalized,
-            new Vector3(-1, 1, -1).normalized, new Vector3(1, 1, -1).normalized, new Vector3(-1, 1, 1).normalized, new Vector3(1, 1, 1).normalized
-        };
-
-        //每个顶点有自己的UV坐标，不熟悉可以不用管，本篇教程不关注UV坐标
-        Vector2[] UVs = new Vector2[8]
-        {
-            new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1),
-            new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0), new Vector2(0, 0)
-        };
-
-        //对顶点的索引，每三个数组成一个三角面，比如0， 1， 2对应Vertices中的第一个、第二个、第三个点，注意这里要用左手法则写顺序。
-        int[] Triangles = new int[36]
-        {
-            0, 1, 2, 1, 3, 2, 4, 5, 0, 5, 1, 0, 4, 0, 6, 6, 0, 2, 2, 7, 6, 7, 2, 3, 3, 5, 7, 1, 5, 3, 5, 4, 6, 5, 6, 7
-        };        
-
-        //给mesh赋值
-        mesh.vertices = Vertices;
-        mesh.normals = Normals;
-        mesh.triangles = Triangles;
-        mesh.uv = UVs;
-
-        //自己起一个名字
-        mesh.name = "Cube";
-
         //把mesh赋给MeshFilter
         mf.mesh = CreateSphere(1, 12, 24);
     }
@@ -92,8 +54,8 @@ public class MySphere : MonoBehaviour {
         var uvs = new List<Vector2>();
         var trs = new List<int>();
 
-        var radianDelta = Mathf.Deg2Rad * (180 / (rings - 1));
-        var sectorDelta = Mathf.Deg2Rad * (360 / (sectors));
+        var radianDelta = Mathf.Deg2Rad * (180.0f / (rings - 1));
+        var sectorDelta = Mathf.Deg2Rad * (360.0f / (sectors));
 
         for (int r = 0; r < rings; r++)
         {
